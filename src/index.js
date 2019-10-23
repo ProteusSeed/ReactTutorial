@@ -103,7 +103,7 @@ class Game extends React.Component {
         this.state = {//initialize the state  
                     history: [{ //Create an empty array of arrays, with the inner array containing 9 elements representing the board at a particular time in the game
                     squares: Array(9).fill(null),
-                    squareClicked: null
+                    squareClicked: null//The square clicked when the state was updated.
                 }],
           stepNumber: 0,                
           xIsNext: true,         
@@ -154,7 +154,9 @@ class Game extends React.Component {
   }
 
   render() {
-        const history = this.state.history; //make a copy of the history
+        const state = this.state;
+
+        const history = state.history; //make a copy of the history
 
         const current = history[this.state.stepNumber]; //make a copy of the history at the current step
 
@@ -167,15 +169,18 @@ class Game extends React.Component {
 
             //passes the squareclicked value from the history state which denotes which square# has been clicked, to squareCoordinates which translates square# to row, square
             const desc = move ?
-              'Go to move #' + move + '; Square: ' + squareCoordinates( step.squareClicked ):
+              'Go to move #' + move + ': Square: ' + squareCoordinates( step.squareClicked ):
               'Go to game start';
-                //console.log(step.squareClicked);
+
+            //set the backgroundColor property to yellow if the particular index# from the history array matches the stepNumber in the state (which represents the current move#)
+            let color = move == state.stepNumber ? "yellow" : "";
+
             //Each button's onclick property is passed a reference to the jumpto Function with the respective move as parameter.
             //Note the arrow function allows access to the move constant in the component.
             //specify a key property for each list item to differentiate each list item from its siblings
             return (
                     <li key={move}>
-                        <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                        <button onClick={() => this.jumpTo(move)} style={{backgroundColor: color}} >{desc}</button>
                     </li>
                    );
           });
