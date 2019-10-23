@@ -41,7 +41,7 @@ function Square(props) {//props is a built in JS object that contains properties
         //Note that react elements have only 2 properties: type(string), props(object). In the below type=button, props=classname, onclick, etc...
         //props is a built in JS object that contains properties that can be passed from one component to another.  
         //note the value prop is passed from the Board.renderSquare method     
-      <button className="square" onClick ={props.onClick}>
+      <button className="square" onClick ={props.onClick} >
         {props.value}
       </button>
     );
@@ -103,9 +103,10 @@ class Game extends React.Component {
         this.state = {//initialize the state  
                     history: [{ //Create an empty array of arrays, with the inner array containing 9 elements representing the board at a particular time in the game
                     squares: Array(9).fill(null),
+                    squareClicked: null
                 }],
           stepNumber: 0,                
-          xIsNext: true,
+          xIsNext: true,         
         };
       }
 
@@ -134,7 +135,8 @@ class Game extends React.Component {
       this.setState({
             history: history.concat([
                 {//concat method is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
-                    squares: squares//update the state with the changes made to the square in squares constant (which reflect the current history)
+                    squares: squares,//update the state with the changes made to the square in squares constant (which reflect the current history)
+                    squareClicked: i,//assigns i, the number of the current square clicked, to the squareClicked state, so there's a record of which sq was clicked at that step
                 }
         ]),
         stepNumber: history.length,//Current step number is the # of historical steps so far (the history constant)
@@ -159,13 +161,15 @@ class Game extends React.Component {
         //Return the value of one of the winning squares if there are 3 contiguous squares with the same value (either X or O)
         const winner = calculateWinner(current.squares);
 
-        //Generate a button element for every item in the history that when clicked 
+        //Generate a button element for every item in the history state array that when clicked 
         //re-renders the board a certain amount of steps back.
         const moves = history.map( (step, move) => {// .map( (element, index) => do stuff )
-            const desc = move ?
-              'Go to move #' + move :
-              'Go to game start';
 
+            //passes the squareclicked value from the history state which denotes which square# has been clicked, to squareCoordinates which translates square# to row, square
+            const desc = move ?
+              'Go to move #' + move + '; Square: ' + squareCoordinates( step.squareClicked ):
+              'Go to game start';
+                //console.log(step.squareClicked);
             //Each button's onclick property is passed a reference to the jumpto Function with the respective move as parameter.
             //Note the arrow function allows access to the move constant in the component.
             //specify a key property for each list item to differentiate each list item from its siblings
@@ -201,6 +205,21 @@ class Game extends React.Component {
                     </div>
             );
             }
+}
+
+function squareCoordinates( SquareNumber )
+{//From a given square number, returns a string denoting the squares coordinates by row#, square#
+    let row = 0; let square = 0;
+
+    if( SquareNumber < 3 ) row = 1;
+    else if( SquareNumber < 6 ) row = 2;
+    else row = 3;
+
+    if( SquareNumber == 0 | SquareNumber == 3 | SquareNumber == 6) square = 1
+    else if( SquareNumber == 1 | SquareNumber == 4 | SquareNumber == 7) square = 2
+    else square = 3;
+
+    return `Row ${row}, Square ${square}`;
 }
 
 //Returns an element from the squares array passed in params if there are 3 contiguous squares with the same marking( x or o)
