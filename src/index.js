@@ -67,6 +67,27 @@ class Board extends React.Component {
 
   render() {//The render method returns a "React element" which creates the UI or view
 
+        var squareBoard = [];
+        let i; let y = 3; var z = 0;
+
+        for( i = 0; i < 3; i++ )
+        {
+            let squareRow = []; //note this variable is re-declared each iteration.
+
+            for( y = 0; y < 3; y++ )
+            {//generate 3 squares into an array which will comprise a single row of the board
+                squareRow[y] = this.renderSquare(z);
+
+                z++;
+            }
+
+            //Add the row created above to an element of the squareBoard array
+            squareBoard[i] = <div className="board-row">{squareRow}</div>;
+        }
+
+        //return the squareBoard array with the 3 rows
+        return <div>{squareBoard}</div>;
+/*
         return (
         <div>
             <div className="board-row">
@@ -86,6 +107,7 @@ class Board extends React.Component {
             </div>
         </div>
         );
+*/   
     }
 }
 
@@ -111,7 +133,7 @@ class Game extends React.Component {
       }
 
   handleClick(i){//note that the value of i has already been "prefilled" when the renderSquare function assigned the value for the onClickHandler prop as this function(handleClick)
-          
+
      //Create a copy of the history state
      //note: We create a copy because avoiding direct data mutation lets us keep previous versions of the game’s history intact, and reuse them later.
       //Copying a slice from first element to the current; ensures that if we “go back in time” and then make a new move from that point, the “future” history will no longer be in the history.
