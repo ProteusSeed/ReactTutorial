@@ -125,10 +125,12 @@ class Game extends React.Component {
         this.state = {//initialize the state  
                     history: [{ //Create an empty array of arrays, with the inner array containing 9 elements representing the board at a particular time in the game
                     squares: Array(9).fill(null),
-                    squareClicked: null//The square clicked when the state was updated.
+                    squareClicked: null,//The square clicked when the state was updated.
+                    stepNo: 0,
                 }],
           stepNumber: 0,                
           xIsNext: true,         
+          moveSortAsc: true,
         };
       }
 
@@ -175,6 +177,13 @@ class Game extends React.Component {
     });
   }
 
+  SortMoves(){ //toggles the value of the moveSortAsc state which determinds whether the moves button list is sorted asc or desc
+    
+    this.setState({
+        moveSortAsc: !this.state.moveSortAsc,
+    })
+  }
+
   render() {
         const state = this.state;
 
@@ -207,6 +216,14 @@ class Game extends React.Component {
                    );
           });
 
+        //creates a button to sort the list of buttons in the moves element
+        const sortButton = <button onClick={() => this.SortMoves()}>sort</button>;
+
+        //sorts depeding ont he value of the moveSortAsc state, which is changed by the SortMoves() function, triggered by the sortButton's onClick event.
+        if( this.state.moveSortAsc ) 
+        { moves.sort() } //sort ascending by key
+        else{ moves.sort( (a,b) => { return b.key - a.key }) } //sort descending by key
+
         let status;
         if (winner) {//If there's a winner the status message denotes the winner (x or o)
                         status = 'Winner: ' + winner;
@@ -227,6 +244,7 @@ class Game extends React.Component {
                         </div>
                         <div className="game-info">
                             <div>{status}</div>
+                            <div>{sortButton}</div>
                             <ol>{moves}</ol>
                         </div>
                     </div>
