@@ -233,14 +233,20 @@ class Game extends React.Component {
 
         //sorts depeding ont he value of the moveSortAsc state, which is changed by the SortMoves() function, triggered by the sortButton's onClick event.
         if( this.state.moveSortAsc ) 
-        { moves.sort() } //sort ascending by key
+          { 
+            moves.sort();  //sort ascending by key
+          }
         else{ moves.sort( (a,b) => { return b.key - a.key }) } //sort descending by key
 
         let status;
         if (winner[0]) {//If there's a winner in the winner element of the array then the status message denotes the winner (x or o)
                         status = 'Winner: ' + winner[0];
                     } 
-        else {//otherwise denote the next player
+        else if( this.state.stepNumber == 9 )//Last step and no winner
+          {
+            status = "Draw";
+          }
+        else{//otherwise denote the next player
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');//If xIsNext=true then return X as the next player, otherwise O
             }
 
