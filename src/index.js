@@ -36,12 +36,17 @@ history = [
 //Function component (stateless)
 //Note component names should always begin with a capital letter, React treats lowercased components as DOM tags like <div>
 function Square(props) {//props is a built in JS object that contains properties that can be passed from one component to another.     
+
+  //If this square is a winning square then highlight it yellow
+  const color = props.winningSquare == true ? "yellow" : "";
+
     return (//returns a "React element" which creates the UI or view
         //The below is a React element written in JSX (JavaScript XML), which allows interwieving of HTML in javaScript
         //Note that react elements have only 2 properties: type(string), props(object). In the below type=button, props=classname, onclick, etc...
         //props is a built in JS object that contains properties that can be passed from one component to another.  
-        //note the value prop is passed from the Board.renderSquare method     
-      <button className="square" onClick ={props.onClick} >
+        //note the value prop is passed from the Board.renderSquare method 
+        //color is the color constant declared above    
+      <button className="square" style={{backgroundColor: color}} onClick ={props.onClick} >
         {props.value}
       </button>
     );
@@ -57,10 +62,16 @@ class Board extends React.Component {
     //the handleClick function is called within the parent class (Board, this class right here)
     //Note: An arrow function is used here making "this" refer to "Board" ("Lexical Scoping", "this" from the object which contains the arrow function)
     //, otherwise if there were a reg function "this" would be null
+
+    //Find the # of the square being rendered in the array of winners.  (Note the winners array is of format [ player, [square1, square2, square3]])
+    //if found then return true to winningSquare
+    const winningSquare = this.props.winners[1].find( sq => sq == i) >= 0 ? true : false;
+
     return( 
             <Square 
                 value={this.props.squares[i]}
                 onClick={ () => this.props.onClick(i) }
+                winningSquare = {winningSquare}
                 /> 
             );
   }
@@ -133,7 +144,7 @@ class Game extends React.Component {
           moveSortAsc: true,
         };
       }
-
+      
   handleClick(i){//note that the value of i has already been "prefilled" when the renderSquare function assigned the value for the onClickHandler prop as this function(handleClick)
 
      //Create a copy of the history state
@@ -147,7 +158,8 @@ class Game extends React.Component {
       //Create a copy of the squares in the "current" array garnered from history state.
       const squares = current.squares.slice();
 
-      if (calculateWinner(squares) || squares[i]) {
+      //if the calculateWinner function returns a null for the winner element in the array then there wasn't a winner and handleclick can continue
+      if (calculateWinner(squares)[0] !== null || squares[i]) {
           return;
         }
 
@@ -184,7 +196,7 @@ class Game extends React.Component {
     })
   }
 
-  render() {
+  render() { 
         const state = this.state;
 
         const history = state.history; //make a copy of the history
@@ -225,8 +237,8 @@ class Game extends React.Component {
         else{ moves.sort( (a,b) => { return b.key - a.key }) } //sort descending by key
 
         let status;
-        if (winner) {//If there's a winner the status message denotes the winner (x or o)
-                        status = 'Winner: ' + winner;
+        if (winner) {//If there's a winner in the winner element of the array then the status message denotes the winner (x or o)
+                        status = 'Winner: ' + winner[0];
                     } 
         else {//otherwise denote the next player
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');//If xIsNext=true then return X as the next player, otherwise O
@@ -234,12 +246,15 @@ class Game extends React.Component {
             //squares={current.squares} passes the current state of the squares to be rendered by the board.
             //Note the handleClick function is passed down all the way to the square component and assigned to the buttons onClick event property
             //The value of i is passed in by the board component in the renderSquare function
+            //the result of the calculateWinner function is passed to the winners prop of the board so that when board renders a square it can determine whether
+            //that square is a winning square or not and thus the Square component can highlight it.
             return (
                     <div className="game">
                         <div className="game-board">
                             <Board 
                                 squares={current.squares}
                                 onClick={i => this.handleClick(i)}
+                                winners={winner}
                             />
                         </div>
                         <div className="game-info">
@@ -286,13 +301,15 @@ function calculateWinner(squares) {
     //, take each of the 3 elements in the inner array as indexes for 3 square elements,
     //and if the values match return the value of the 1st square.
     for ( let i = 0; i < lines.length; i++ ) {
+
       const [a, b, c] = lines[i];//Add the values of the array in Index=i and spread them to constants a, b, & c
+
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) //compare the values of the 3 squares
         {
-            return squares[a];
+            return[ squares[a], lines[i] ]; //Return an array with two elements: The value of one of the winning squares (x or o); the # of the 3 winning squares
         }
     }
-    return null;
+    return [null, [null, null, null] ];//return an empty array if no winner.
   }
 
 // ========================================
@@ -311,3 +328,4 @@ ReactDOM.render(
   document.getElementById('root')//The root node which is the top element in this document.
   
 );
+
