@@ -237,12 +237,13 @@ class Game extends React.Component {
         else{ moves.sort( (a,b) => { return b.key - a.key }) } //sort descending by key
 
         let status;
-        if (winner) {//If there's a winner in the winner element of the array then the status message denotes the winner (x or o)
+        if (winner[0]) {//If there's a winner in the winner element of the array then the status message denotes the winner (x or o)
                         status = 'Winner: ' + winner[0];
                     } 
         else {//otherwise denote the next player
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');//If xIsNext=true then return X as the next player, otherwise O
             }
+
             //squares={current.squares} passes the current state of the squares to be rendered by the board.
             //Note the handleClick function is passed down all the way to the square component and assigned to the buttons onClick event property
             //The value of i is passed in by the board component in the renderSquare function
