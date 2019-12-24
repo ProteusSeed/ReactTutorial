@@ -42,7 +42,7 @@ function Square(props) {//props is a built in JS object that contains properties
 
     return (//returns a "React element" which creates the UI or view
         //The below is a React element written in JSX (JavaScript XML), which allows interwieving of HTML in javaScript
-        //Note that react elements have only 2 properties: type(string), props(object). In the below type=button, props=classname, onclick, etc...
+        //Note that react elements have only 2 properties: type(string), properties(object). In the below, the type is "button", properties are: classname, style, onclick, etc...
         //props is a built in JS object that contains properties that can be passed from one component to another.  
         //note the value prop is passed from the Board.renderSquare method 
         //color is the color constant declared above    
@@ -324,7 +324,8 @@ function calculateWinner(squares) {
 /*ReactDOM.render(element, container[, callback])
 Render a React element into the DOM in the supplied container..
 
-If the React element was previously rendered into container, this will perform an update on it and only mutate the DOM as necessary to reflect the latest React element.
+If the React element was previously rendered into the container this will perform a diff between it's representation
+in the react virtual dom and the actual dom, and only update the element and mutate the actual DOM if it has changed.
 
 If the optional callback is provided, it will be executed after the component is rendered or updated.
 
